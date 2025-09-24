@@ -7,6 +7,7 @@ from rclpy.action import ActionServer, GoalResponse, CancelResponse
 from rclpy.parameter import Parameter
 
 import rosbag2_py
+import datetime
 
 from ros2_bag_recorder_interfaces.action import RecorderManager
 import yaml
@@ -127,7 +128,7 @@ class RecordingNode(Node):
     
     def goal_callback(self, goal_request):
         """Accept or reject goal requests."""
-        if self._is_recording:
+        if self.recording:
             self.get_logger().warn("Recording already in progress, rejecting goal")
             return GoalResponse.REJECT
         return GoalResponse.ACCEPT
@@ -168,14 +169,27 @@ class RecordingNode(Node):
                 goal_handle.abort()
         
         except Exception as e:
-            self.get_logger().error(f"Failed to record: {e}")
-            self.stop_recording()
+            self.get_logger().error(f"Something failed while recording:\n\t\'{e}\'")
+            self.stop_recording()# Create error result
+            result = RecorderManager.Result()
+            result.success = False
+            result.message = f"Recording failed: {str(e)}"
+            goal_handle.abort()
             
         finally:
             self.recording = False
+        
+        return result
     
     def start_recording(self):
         """Start the recorder."""
+        # Update uri with a subdirectory containing the filename prefix and a timestamp
+        bag_path = os.path.join(
+            self.config["destination"]["target_folder"],
+            f"{self.config['destination']['filename_prefix']}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        )
+        self.storage_options.uri = bag_path
+        
         # Initialize recorder
         self.recorder = rosbag2_py.Recorder(
             self.storage_options,
@@ -184,7 +198,9 @@ class RecordingNode(Node):
         
         self.recorder.start_spin()
         self.recorder.record()
+        
         self.get_logger().info('Recording started')
+        self.get_logger().info(f'\trecording to: {bag_path}')
     
     def stop_recording(self):
         """Stop the current recording session (if any)."""
@@ -216,7 +232,7 @@ class RecordingNode(Node):
         while True:
             # while True:
             # Check for cancellation
-            if goal_handle.is_cancel_requested():
+            if goal_handle.is_cancel_requested:
                 goal_handle.canceled()
                 return False
             

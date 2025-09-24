@@ -1,6 +1,8 @@
 destination:
   # Directory where bag files will be saved (if it doesn't exist, it will be created)
   target_folder: "~/rosbag_recordings/"
+  # Prefix for the bag file names, timestamp and extension will be added automatically
+  filename_prefix: "test"
 
 record:
   # List of topics to record
