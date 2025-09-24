@@ -1,19 +1,22 @@
-recording:
-  # List of topics to record
-  recorded_topics:
-    - "/chatter"
+destination:
   # Directory where bag files will be saved (if it doesn't exist, it will be created)
   target_folder: "~/rosbag_recordings/"
-  # Prefix for bag file names (a timestamp will be added)
-  filename_prefix: ""
 
-storage:
+record:
+  # List of topics to record
+  topics:
+    - "/chatter"
   # Compression type: 'none', 'zstd'
   compression_format: "zstd"
   # Compression mode: 'file' or 'message'
   compression_mode: "file"
-  # Maximum bag file size in GB (0 = unlimited), for a single file, before splitting into separate chunks (this does not limit recording)
-  max_bag_size: 0
-  # Maximum recording duration in seconds (0 = unlimited) for a single file, before splitting into separate chunks (this does not limit recording)
-  max_bag_duration: 0
 
+storage:
+  # Maximum bag file size in bytes (0 = unlimited), for a single file, before splitting into separate chunks (this does not limit recording)
+  max_bagfile_size: 0
+  # Maximum recording duration in seconds (0 = unlimited) for a single file, before splitting into separate chunks (this does not limit recording)
+  max_bagfile_duration: 0
+
+
+# Check here for arguments that can be passed for recording and storage options:
+# Storage: https://github.com/ros2/rosbag2/blob/6b462de40afa0cff207a5da6301e85cb108233ad/rosbag2_storage/include/rosbag2_storage/storage_options.hpp
