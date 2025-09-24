@@ -1,0 +1,20 @@
+# List of topics to record
+recorded_topics:
+  - "/chatter"
+
+# Directory where bag files will be saved (if it doesn't exist, it will be created)
+target_folder: "~/rosbag_recordings/"
+
+# Prefix for bag file names (a timestamp will be added)
+filename_prefix: ""
+
+# Compression type: 'none', 'zstd'
+compression_format: "zstd"
+# COmpression mode: 'file' or 'message'
+compression_mode: "file"
+
+# Maximum bag file size in GB (0 = unlimited), for a single file, before splitting
+max_bag_size: 0
+
+# Maximum recording duration in seconds (0 = unlimited) for a single file, before splitting
+max_bag_duration: 0
